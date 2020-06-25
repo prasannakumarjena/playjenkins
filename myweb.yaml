@@ -16,7 +16,7 @@ spec:
         app: myweb
     spec:
       containers:
-      - image: 192.168.1.81:5000/justme/myweb:1
+      - image: 803772965863.dkr.ecr.us-east-2.amazonaws.com/mean_demo:latest
         imagePullPolicy: Always
         name: myweb
 
@@ -35,4 +35,4 @@ spec:
     targetPort: 80
   selector:
     app: myweb
-  type: NodePort
+  type: LoadBalancer
