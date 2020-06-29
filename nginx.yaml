@@ -1,44 +1,37 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: helloweb
   labels:
-    app: hello
+    app: web
+  name: mynginx
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: hello
-      tier: web
+      app: web
   template:
     metadata:
       labels:
-        app: hello
-        tier: web
+        app: web
     spec:
       containers:
-      - name: hello-app
-        image: 803772965863.dkr.ecr.us-east-2.amazonaws.com/mean_demo:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
+      - image: nginx
+        name: mynginx
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mean-demo
-  annotations:    
-    service.beta.kubernetes.io/oci-load-balancer-ssl-ports: "443"
-    service.beta.kubernetes.io/oci-load-balancer-tls-secret: ssl-certificate-secret
+  labels:
+    app: web
+  name: mynginx
 spec:
-  selector:
-    app: hello
-  type: LoadBalancer
   ports:
-   - name: http
-     protocol: TCP
-     port: 80
-     targetPort: 8000
-   - name: https
-     protocol: TCP
-     port: 443
-     targetPort: 8000
+  - nodePort: 32223
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web
+  type: NodePort
