@@ -1,6 +1,8 @@
 pipeline {
      environment {
-    registry = "pkjdocker/jenkinstest"
+     registry = "pkjdocker/jenkinstest"
+     registryCredential = 'dockerhub'
+     dockerImage = ''
   }
   agent any
   stages {
@@ -9,12 +11,27 @@ pipeline {
         git 'https://github.com/prasannakumarjena/playjenkins'
       }
     }
-    stage{
+    stage('docker image build'){
         steps{
             script {
-              docker.build registry + ":$BUILD_NUMBER"
+              dockerImage = docker.build registry + ":$BUILD_NUMBER"
+              sh "docker images"
             }
         }
+    }
+    stage('Docker Image push') {
+      steps{
+        script {
+          docker.withRegistry( '', registryCredential ) {
+            dockerImage.push()
+          }
+        }
+      }
+    }
+    stage('Remove Unused docker image') {
+      steps{
+        sh "docker rmi $registry:$BUILD_NUMBER"
+      }
     }
   }
 }
