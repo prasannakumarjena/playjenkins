@@ -30,8 +30,15 @@ pipeline {
     }
     stage('Remove Unused docker image') {
       steps{
-        sh "docker rmi $registry:$BUILD_NUMBER"
+        sh "docker system prune -af --volumes"
       }
     }
   }
+  post {
+        cleanup {
+            echo 'One way or another, I have finished'
+            deleteDir() /* clean up our workspace */
+            sh "ls"
+        }
+    }
 }
